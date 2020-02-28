@@ -1,0 +1,56 @@
+
+setwd("H:\\Практика для студентов ИГУ\\физтко-химическая экология\\Занятие_2")
+
+my_data<-read.table("data_2.txt",header=TRUE,sep="\t")
+
+
+
+#/////////дисперсионный анализ
+
+fit <- aov(Synedra_acus.subsp_radians  ~ bassein, data=my_data)
+
+summary(fit)
+
+boxplot(Synedra_acus.subsp_radians  ~ bassein, data=my_data, range=0)
+
+
+fit <- aov(Koliella_longiseta  ~ bassein, data=my_data)
+
+summary(fit)
+
+boxplot(Koliella_longiseta  ~ bassein, data=my_data, range=0)
+
+
+#////////кореляционный анализ
+
+cor.test(my_data$Synedra_acus.subsp_radians, my_data$Si_mg.l, method="pearson")
+
+cor.test(my_data$Synedra_acus.subsp_radians, my_data$NO3_mg.l, method="pearson")
+
+cor.test(my_data$Synedra_acus.subsp_radians, my_data$T_C, method="pearson")
+
+#////////регресионный анализ
+
+model <- lm(Synedra_acus.subsp_radians  ~ Si_mg.l, data=my_data)
+
+summary(model)
+
+#////////визуализация линейной регресии
+
+newx<-seq(min(my_data$Si_mg.l), max(my_data$Si_mg.l), length.out=100)
+
+new.df<-data.frame(Si_mg.l=newx)
+
+preds<-predict(model, new.df, interval = "confidence", level = 0.95)
+
+plot(Synedra_acus.subsp_radians  ~ Si_mg.l, data = my_data, type = 'n')
+
+polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = 'grey80', border = NA)
+
+lines(newx, preds[ ,1], lty = 'dashed', col = 'red')
+
+lines(newx, preds[ ,3], lty = 'dashed', col = 'red')
+lines(newx, preds[ ,2], lty = 'dashed', col = 'red')
+
+points(Synedra_acus.subsp_radians  ~ Si_mg.l, data = my_data)
+
